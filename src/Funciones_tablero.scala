@@ -1,0 +1,3 @@
+class Funciones_tablero {
+
+}
