@@ -3,3 +3,9 @@
 project/
 target/
 build.sbt
+
+.settings/
+.bin/
+.cache-main
+.classpath
+.project
