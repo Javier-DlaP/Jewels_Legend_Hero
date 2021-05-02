@@ -5,7 +5,7 @@ target/
 build.sbt
 
 .settings/
-.bin/
+bin/
 .cache-main
 .classpath
 .project
