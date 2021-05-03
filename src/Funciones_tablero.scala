@@ -1,3 +1,3 @@
-class Funciones_tablero {
+object Funciones_tablero {
 
 }
