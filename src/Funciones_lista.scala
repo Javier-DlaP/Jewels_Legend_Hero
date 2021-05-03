@@ -1,8 +1,12 @@
+import scala.annotation.tailrec
+
 object Funciones_lista {
 
   // Impresión de una lista en forma de matriz a partir de esta y sus dimensiones
+  @tailrec
   def imprimir_lista(width: Int, length: Int, matrix: List[Int]): Unit = {
     // Función auxiliar que imprime para una de las filas
+    @tailrec
     def imprimir_lista_aux(width: Int, matrix: List[Int]): List[Int] = {
       if (width == 0) {
         matrix
@@ -21,6 +25,7 @@ object Funciones_lista {
   // Obtiene el valor de una posición concreta de una lista en forma de matriz a partir de la posición, la matriz y sus dimensiones
   def get(x: Int, y: Int, width: Int, length: Int, matrix: List[Int]): Int = {
     // Función auxiliar que busca el valor requerido de forma iterativa
+    @tailrec
     def get_aux(n: Int, matrix: List[Int]): Int = {
       if (n == 0) {
         matrix.head
@@ -66,5 +71,14 @@ object Funciones_lista {
     }
     assert(y<width)
     column_aux(0, y, width, length, matrix)
+  }
+
+  // Cuenta el número de elementos de una lista
+  def len(lista: List[Int]): Int = {
+    if(lista == Nil) {
+      0
+    } else {
+      1 + len(lista.tail)
+    }
   }
 }
