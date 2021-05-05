@@ -1,5 +1,8 @@
 import scala.annotation.tailrec
 import Funciones_lista._
+import Funciones_tablero.eliminar_fichas_columna
+import jdk.internal.jline.console.WCWidth
+import sun.security.util.Length
 
 object Funciones_tablero {
 
@@ -141,5 +144,279 @@ object Funciones_tablero {
     
     val tablero_ = caer_diamantes(0, 0, width, length, tablero)
     colocar_diamantes(count(0, tablero_), tablero_)
+  }
+
+  /*
+  * MOVER_FICHAS
+  * Intercambia la ficha de la posición indicada por la ficha de la posición en la que queremos poner la ficha principal
+  */
+  def mover_fichas (fila_inicial: Int, columna_inicial: Int, fila_final: Int, columna_final: Int, width: Int, length: Int, tablero: List[Int]): List[Int] =
+  {
+    val ficha_ppal = get(fila_inicial, columna_inicial, width, length, tablero)              // La ficha que se quiere mover, la principal
+    val ficha_secun = get(fila_final, columna_final, width, length, tablero)                 // La ficha por la que se ha movido la principal, es decir, la secundaria
+
+    val tablero_ = set(ficha_ppal, fila_final, columna_final, width, length, tablero)        // Cambiamos la ficha ppal
+    set(ficha_secun, fila_inicial, columna_inicial, width, length, tablero_)                 // Cambiamos la ficha secundaria
+  }
+
+
+  /*
+  * COMPROBAR_FICHAS_ALINEADAS
+  * Comprueba fichas alineadas
+  * Devuelve el tablero
+  */
+  def comprobar_fichas_alineadas (width: Int, length: Int, tablero: List[Int]) : List[Int] =
+  {
+    // Comprobamos mirando la fila
+    val tablero1 = comprobar_fichas_alineadas_fila (0, width, length, tablero)
+
+    // Comprobamos mirando la columna
+    comprobar_fichas_alineadas_columna (0, width, length, tablero1)
+  }
+
+  /*
+  * COMPROBAR_FICHAS_ALINEADAS_FILA
+  * Comprueba fila a fila si hay fichas alineadas hasta que encuentra que en una si se da el caso
+  * Devuelve el tablero
+  */
+  @tailrec
+  def comprobar_fichas_alineadas_fila(num_fila: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
+  {
+    // Ya no hay mas filas que comprobar
+    if ((num_fila + 1) == length)
+    {
+      tablero
+    }
+    // Sigue habiendo filas que comprobar
+    else
+    {
+      val fila = row(num_fila, width, length, tablero)
+      val valor = comprobar_fichas_alineadas_aux(fila, tablero)
+
+      // Si hay fichas alineadas --> valor es distinto de cero
+      if (valor != 0)
+      {
+        val tablero_ = eliminar_fichas_fila(valor, 0, num_fila, 0, width, length, tablero)// eliminar fichas
+        println("Si cambio")
+        comprobar_fichas_alineadas (width, length, tablero_)
+      }
+      // No hay fichas alineadas
+      else
+      {
+        comprobar_fichas_alineadas_fila (num_fila + 1, width, length, tablero)
+      }
+    }
+  }
+
+  /*
+  * COMPROBAR_FICHAS_ALINEADAS_COLUMNA
+  * Comprueba columna a columna si hay fichas alineadas hasta que encuentra que en una si se da el caso
+  * Devuelve el tablero
+  */
+  @tailrec
+  def comprobar_fichas_alineadas_columna(num_columna: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
+  {
+    // Ya no hay mas columnas que comprobar
+    if (num_columna == width)
+    {
+      tablero
+    }
+    // Sigue habiendo filas que comprobar
+    else
+    {
+      val columna = column(num_columna, width, length, tablero)
+      val valor = comprobar_fichas_alineadas_aux(columna, tablero)
+
+      // Si hay fichas alineadas --> valor es distinto de cero
+      if (valor != 0)
+      {
+        val tablero_ = eliminar_fichas_columna(valor, 0, 0, num_columna, width, length, tablero)    // eliminar fichas
+          println("Si cambio")
+        comprobar_fichas_alineadas (width, length, tablero_)
+      }
+      // No hay fichas alineadas
+      else
+      {
+        comprobar_fichas_alineadas_columna (num_columna + 1, width, length, tablero)
+      }
+    }
+  }
+
+  /*
+  * COMPROBAR_FICHAS_ALINEADAS_AUX
+  * Comprueba si hay 3 o más fichas alineadas
+  * eedd = estructura de datos (fila y/o columna)
+  * Devuelve el valor que se ha repetido
+  */
+  @tailrec
+  def comprobar_fichas_alineadas_aux(eedd: List[Int], tablero: List[Int]) : Int =
+  {
+    // La eedd esta vacia
+    if (eedd == Nil)
+    {
+      0
+    }
+    // La eeddd no esta vacia
+    else
+    {
+      val valor = eedd.head
+      val contador = 0                                          // Cuenta las veces que está repetido un valor
+
+      // Si el valor es no esta 3 veces seguidas o más
+      if (contar (valor, eedd, contador) < 3)
+      {
+        comprobar_fichas_alineadas_aux(eedd.tail, tablero)     // Comprueba con el siguiente elemento
+      }
+      // Si el valor esta repetido 3 o más
+      else
+      {
+        valor
+      }
+    }
+  }
+
+  /*
+  * CONTAR
+  * Cuenta cuantas veces esta repetido un valor sucesivamente
+  * eedd = estructura de datos (fila y/o columna)
+  */
+  @tailrec
+  def contar(valor: Int, eedd: List[Int], contador: Int) : Int =
+  {
+    // Si la fila esta vacia o el valor no es igual al sucesor
+    if ((eedd == Nil) || (valor != eedd.head))
+    {
+      contador
+    }
+    // Si el valor es igual al elemento sucesor
+    else
+    {
+      contar (valor, eedd.tail, contador + 1)   // Se suma 1 al contador y se pasa el resto de la fila
+    }
+  }
+
+  /*
+  * ELIMINAR_FICHAS_FILA
+  * Las fichas que se eliminan se ponen con valor 0
+  */
+  @tailrec
+  def eliminar_fichas_fila(valor: Int, cont: Int, num_fila: Int, num_columna: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
+  {
+    // Ya se ha revisado toda la fila y/o ya se han eliminado las fichas
+    if (((num_columna + 1) == width) || (cont == 9999999))
+    {
+      tablero
+    }
+    else
+    {
+      // Se cambian los elementos sucesivos
+      if (valor == get(num_fila, num_columna, width, length, tablero))
+      {
+        val tablero_ = set( 0, num_fila, num_columna, width, length, tablero)
+        eliminar_fichas_fila(valor, cont + 1, num_fila, num_columna + 1, width, length, tablero_)
+      }
+      // El elem no se elimina
+      else {
+        // Si el cont > 0 --> el tablero ha sido modificado previamente
+        if (cont > 0) {
+          // No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
+          if (cont < 3) {
+            if (cont == 2) {
+              val tablero1 = set(valor, num_fila, num_columna - 1, width, length, tablero)
+              val tablero2 = set(valor, num_fila, num_columna - 2, width, length, tablero1)
+              eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, tablero2) // Se vuelve a poner el cont a 0
+            }
+            // cont == 1
+            else {
+              val tablero1 = set(valor, num_fila, num_columna - 1, width, length, tablero)
+              eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, tablero1) // Se vuelve a poner el cont a 0
+            }
+          }
+          // cont >= 3 --> Ya se han eliminado las fichas
+          else {
+            eliminar_fichas_fila(valor, 9999999, num_fila, num_columna + 1, width, length, tablero) // Asignamos al contador un numero muy grande para que nunca coincida --> necesario para la condicion de parada
+          }
+        }
+        // No se ha modificado previamente el tablero en ningun momento
+        else {
+          eliminar_fichas_fila(valor, cont, num_fila, num_columna + 1, width, length, tablero)
+        }
+      }
+    }
+  }
+
+  /*
+  * ELIMINAR_FICHAS_COLUMNA
+  * Elimina las fichas de la columna
+  */
+  @tailrec
+  def eliminar_fichas_columna(valor: Int, cont: Int, num_fila: Int, num_columna: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
+  {
+    // se ha recorrido toda la columna y/o ya se han eliminado las fichas
+    if (((num_fila + 1) == length) || (cont == 9999999))
+    {
+      tablero;
+    }
+    else
+    {
+      // Se cambian los elementos sucesivos
+      if (valor == get(num_fila, num_columna, width, length, tablero))
+      {
+        val tablero_ = set( 0, num_fila, num_columna, width, length, tablero)
+        eliminar_fichas_columna(valor, cont + 1, num_fila + 1, num_columna, width, length, tablero_)
+      }
+      // El elem no se elimina
+      else
+      {
+        // Si el cont > 0 --> el tablero ha sido modificado previamente
+        if (cont > 0)
+        {
+          // No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
+          if (cont < 3)
+          {
+            if (cont == 2)
+            {
+              val tablero1 = set( valor, num_fila - 1, num_columna, width, length, tablero)
+              val tablero2 = set( valor, num_fila - 2, num_columna, width, length, tablero1)
+              eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, tablero2)   // Se vuelve a poner el cont a 0
+            }
+            // cont == 1
+            else
+            {
+              val tablero1 = set( valor, num_fila - 1, num_columna, width, length, tablero)
+              eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, tablero1)   // Se vuelve a poner el cont a 0
+            }
+          }
+          // cont >= 3 --> Ya se han eliminado las fichas
+          else
+          {
+            eliminar_fichas_columna(valor, 9999999, num_fila + 1, num_columna, width, length, tablero)   // Asignamos al contador un numero muy grande para que nunca coincida --> necesario para la condicion de parada
+          }
+        }
+        // No se ha modificado previamente el tablero en ningun momento
+        else
+        {
+          eliminar_fichas_columna(valor, cont, num_fila + 1, num_columna, width, length, tablero)
+        }
+      }
+    }
+  }
+
+  /*
+  * COMPROBAR_HAY_CAMBIOS
+  * Comprobar si el tablero final y el inicial son iguales
+  */
+  def comprobar_hay_cambios (fila_inicial: Int, columna_inicial: Int, fila_final: Int, columna_final: Int, width: Int, length: Int, tablero1: List[Int], tablero2: List[Int]) : List[Int] =
+  {
+    // Si no se ha hecho ningun cambio --> devuelve el tablero inicial, sin el cambio previo de posicion entre fichas
+    if (tablero1 == tablero2)
+    {
+      mover_fichas (fila_inicial, columna_inicial, fila_final, columna_final, width, length, tablero1)
+    }
+    // Si se han producido cambios
+    else
+    {
+      tablero2
+    }
   }
 }
