@@ -1,40 +1,72 @@
 import Funciones_tablero._
 import Funciones_lista._
 
-object Main {
-  def main(args: Array[String]): Unit = {
+object Main
+{
+
+  def main(args: Array[String]): Unit =
+  {
     val width = 7
     val length = 9
 
-    val fila_inicial = 1
-    val columna_inicial = 1
-    val fila_final = 2
-    val columna_final = 1
-
-    val tablero = crear_tablero(width, length)
+    val tablero1 = crear_tablero(width, length)                             // Creamos el tablero que esta vacio
     //imprimir_tablero(width, length, tablero)
 
-    val tablero_lleno = nuevos_diamantes(width, length, tablero)
-    //imprimir_tablero(width, length, tablero_lleno)
+    val tablero2 = nuevos_diamantes(width, length, tablero1)               // Rellenamos el tablero con los diamantes
 
-    val tablero_ = set(0,4,3,width,length,set(0,3,4,width,length,set(0,3,3,width,length,tablero_lleno)))
-    //imprimir_tablero(width, length, tablero_)
+    val tablero3 = comprobar_fichas_alineadas (width, length, tablero2)    // Comprobamos si hay fichas que se pueden eliminar
 
-    val tablero_lleno_ = nuevos_diamantes(width, length, tablero_)
-    println("Nuevos diamantes")
-    imprimir_tablero(width, length, tablero_lleno_)
+    // Si ha habido eliminacion de fichas se imprime el tablero inicial, si no no porque apareceria duplicado
+    if (tablero2 != tablero3)
+    {
+      imprimir_tablero(width, length, tablero2)
+    }
 
-    val tablero1 = mover_fichas(fila_inicial, columna_inicial, fila_final, columna_final, width, length, tablero_lleno_)
-    println("Mover fichas")
-    imprimir_tablero(width, length, tablero1)
+    jugar (width, length, tablero3)
+  }
 
-    val tablero2 = comprobar_fichas_alineadas (width, length, tablero1)
-    println("Comprobar fichas alineadas --> eliminaciones")
-    //imprimir_tablero(width, length, tablero2)
+  /*
+  * JUGAR
+  * El desarrollo del juego
+  */
+  def jugar (width: Int, length: Int, tablero: List[Int]): Unit =
+  {
+    imprimir_tablero(width, length, tablero)
 
-    val tablero3 = comprobar_hay_cambios (fila_inicial, columna_inicial, fila_final, columna_final, width, length, tablero1, tablero2)
-    //println("Hay retroceso?")
-    imprimir_tablero(width, length, tablero3)
+    println("-- Introduce la posicion de la ficha que quieres mover --")
+
+    // Pedimos los datos sobre las posiciones de las practicas
+    val fila_inicial = pedir_num_fila (length)
+    val columna_inicial = pedir_num_columna (width)
+
+    println("\n-- Introduce la posicion a la que quieres mover la ficha --")
+
+    val fila_final = pedir_num_fila (length)
+    val columna_final = pedir_num_columna (width)
+    println("")
+
+    // Comprobamos que las fichas son adyacentes
+    if (comprobar_movimiento_permitido (fila_inicial, columna_inicial, fila_final, columna_final))
+    {
+      // Movemos las fichas
+      val tablero1 = mover_fichas(fila_inicial, columna_inicial, fila_final, columna_final, width, length, tablero)
+      println("Mover fichas")
+      imprimir_tablero(width, length, tablero1)
+
+      // Comprobamos si hay fichas que se pueden eliminar
+      val tablero2 = comprobar_fichas_alineadas (width, length, tablero1)
+
+      // Comprobamos que se han eliminado fichas --> si no, se vuelve al tablero antes del movimiento de las fichas
+      val tablero3 = comprobar_hay_cambios (fila_inicial, columna_inicial, fila_final, columna_final, width, length, tablero1, tablero2)
+
+      // Seguimos el juego
+      jugar (width, length, tablero3)
+    }
+    else
+    {
+      println("\n--> Las fichas tienen que ser adyacentes:   ---xo---\n")
+      jugar (width, length, tablero)
+    }
   }
 
 }
