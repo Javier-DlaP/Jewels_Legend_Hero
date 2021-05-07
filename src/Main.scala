@@ -1,6 +1,8 @@
 import Funciones_tablero._
 import Funciones_lista._
 
+import scala.io.StdIn.readLine
+
 object Main
 {
 
@@ -59,13 +61,51 @@ object Main
       // Comprobamos que se han eliminado fichas --> si no, se vuelve al tablero antes del movimiento de las fichas
       val tablero3 = comprobar_hay_cambios (fila_inicial, columna_inicial, fila_final, columna_final, width, length, tablero1, tablero2)
 
-      // Seguimos el juego
-      jugar (width, length, tablero3)
+      // Continuar el juego o exit
+      if (continuar_juego ())
+      {
+        // Seguimos el juego
+        jugar (width, length, tablero3)
+      }
+      else
+      {
+        println("\n ADIOS, VUELVE PRONTO!!")
+      }
     }
     else
     {
       println("\n--> Las fichas tienen que ser adyacentes:   ---xo---\n")
       jugar (width, length, tablero)
+    }
+  }
+
+  /*
+  * CONTINUAR_JUEGO
+  * El desarrollo del juego
+  */
+  def continuar_juego (): Boolean =
+  {
+    println("\n--> Pulsa ENTER para seguir jugando o escribe EXIT para abandonar el juego")
+    val jugar: String = readLine()
+
+    // Enter
+    if(jugar == "")
+    {
+      true
+    }
+    else
+    {
+      // Exit
+      if (jugar.toUpperCase() == "EXIT")
+      {
+        false
+      }
+      // Otra cosa
+      else
+      {
+        println("\n--> No entiendo tu instruccion")
+        continuar_juego ()
+      }
     }
   }
 

@@ -1,9 +1,13 @@
 import scala.annotation.tailrec
 import Funciones_lista._
+
 import scala.io.StdIn.readLine
 import Funciones_tablero.eliminar_fichas_columna
 import jdk.internal.jline.console.WCWidth
 import sun.security.util.Length
+
+import java.io.IOException
+
 
 object Funciones_tablero
 {
@@ -554,18 +558,29 @@ object Funciones_tablero
   def pedir_num_fila (length: Int) : Int =
   {
     println("Fila (0-8): ")
-    //Pedir dato por pantalla
-    val num_fila: Int = readLine().toInt
+    try
+    {
+      //Pedir dato por pantalla
+      val num_fila: Int = readLine().toInt
 
-    // si no esta dentro del rango, se vuelve a pedir el valor
-    if ((num_fila < 0) || (num_fila > (length - 1)))
-    {
-      println("\n--> El valor debe estar dentro del rango [0, 8]\n")
-      pedir_num_fila(length)
+      // si no esta dentro del rango, se vuelve a pedir el valor
+      if ((num_fila < 0) || (num_fila > (length - 1)))
+      {
+        println("\nEl valor debe estar dentro del rango [0, 6]\n")
+        pedir_num_fila(length)
+      }
+      else
+      {
+        num_fila
+      }
     }
-    else
+    catch
     {
-      num_fila
+      case ex: NumberFormatException =>
+      {
+        println("Tiene que ser un numero entero")
+        pedir_num_fila (length)
+      }
     }
   }
 
@@ -576,18 +591,29 @@ object Funciones_tablero
   def pedir_num_columna (width: Int) : Int =
   {
     println("Columna (0-6): ")
-    //Pedir dato por pantalla
-    val num_columna: Int = readLine().toInt
+    try
+    {
+      //Pedir dato por pantalla
+      val num_columna: Int = readLine().toInt
 
-    // si no esta dentro del rango, se vuelve a pedir el valor
-    if ((num_columna < 0) || (num_columna > (width - 1)))
-    {
-      println("\n--> El valor debe estar dentro del rango [0, 6]\n")
-      pedir_num_columna(width)
+      // si no esta dentro del rango, se vuelve a pedir el valor
+      if ((num_columna < 0) || (num_columna > (width - 1)))
+      {
+        println("\nEl valor debe estar dentro del rango [0, 6]\n")
+        pedir_num_columna(width)
+      }
+      else
+      {
+        num_columna
+      }
     }
-    else
+    catch
     {
-      num_columna
+      case ex: NumberFormatException =>
+      {
+        println("Tiene que ser un numero entero")
+        pedir_num_columna (width)
+      }
     }
   }
 
