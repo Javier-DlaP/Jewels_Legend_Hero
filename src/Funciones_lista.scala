@@ -41,25 +41,8 @@ object Funciones_lista
   */
   def get(x: Int, y: Int, width: Int, length: Int, matrix: List[Int]): Int =
   {
-
-    /*
-    * GET_AUX
-    * Función auxiliar que busca el valor requerido de forma iterativa
-    */
-    @tailrec
-    def get_aux(n: Int, matrix: List[Int]): Int =
-    {
-      if (n == 0)
-      {
-        matrix.head
-      }
-      else
-      {
-        get_aux(n-1, matrix.tail)
-      }
-    }
     assert(x<length && y<width)
-    get_aux(x*width+y, matrix)
+    matrix(x*width+y)
   }
 
   /*
@@ -68,24 +51,8 @@ object Funciones_lista
   */
   def set(valor:Int, x: Int, y: Int, width: Int, length: Int, matrix: List[Int]): List[Int] =
   {
-
-    /*
-    * SET_AUX
-    * Función auxiliar que busca la posición donde colocar el nuevo valor
-    */
-    def set_aux(valor: Int, n: Int, matrix: List[Int]): List[Int] =
-    {
-      if (n == 0)
-      {
-        valor::matrix.tail
-      }
-      else
-      {
-        matrix.head::set_aux(valor, n-1, matrix.tail)
-      }
-    }
     assert(x<length && y<width)
-    set_aux(valor, x*width+y, matrix)
+    matrix.updated(x*width+y, valor)
   }
 
   /*
@@ -152,44 +119,5 @@ object Funciones_lista
     }
     assert(y<width)
     column_aux(0, y, width, length, matrix)
-  }
-
-  /*
-  * LEN
-  * Cuenta el número de elementos de una lista
-  */
-  def len(lista: List[Int]): Int =
-  {
-    if(lista == Nil)
-    {
-      0
-    }
-    else
-    {
-      1 + len(lista.tail)
-    }
-  }
-
-  /*
-  * COUNT
-  * Cuenta el número de veces que aparece un elemento en la lista
-  */
-  def count(x: Int, lista: List[Int]): Int =
-  {
-    if(lista == Nil)
-    {
-      0
-    }
-    else
-    {
-      if(x == lista.head)
-      {
-        1+count(x, lista.tail)
-      }
-      else
-      {
-        count(x, lista.tail)
-      }
-    }
   }
 }

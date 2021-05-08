@@ -1,6 +1,8 @@
 import scala.annotation.tailrec
 import Funciones_lista._
+
 import scala.io.StdIn.readLine
+import scala.util.Random
 
 object Funciones_tablero
 {
@@ -11,24 +13,7 @@ object Funciones_tablero
   */
   def crear_tablero(width: Int, length: Int): List[Int] =
   {
-
-    /*
-    * CREAR_TABLERO_AUX
-    * Función recursiva auxiliar que crea un tablero
-    */
-    def crear_tablero_aux(n: Int): List[Int] =
-    {
-      if(n == 0)
-      {
-        Nil
-      }
-      else
-      {
-        0::crear_tablero_aux(n-1)
-      }
-    }
-
-    crear_tablero_aux(width*length)
+    List.fill(width*length)(0)
   }
 
   /*
@@ -167,7 +152,7 @@ object Funciones_tablero
         @tailrec
         def quedar_por_caer_columna(encima: Int, columna: List[Int]): Boolean =
         {
-          if (columna == Nil)
+          if (columna.isEmpty)
           {
             false
           }
@@ -245,28 +230,13 @@ object Funciones_tablero
     * COLOCAR_DIAMANTES
     * Se colocan fichas con un valor entre el 1 y el 8 en las posiciones sin ninguna de estas
     */
-    def colocar_diamantes(restantes: Int, tablero: List[Int]): List[Int] =
+    def colocar_diamantes(tablero: List[Int]): List[Int] =
     {
-      if (restantes == 0)
-      {
-        tablero
-      }
-      else
-      {
-        if(tablero.head == 0)
-        {
-          val r = new scala.util.Random
-          r.nextInt(8)+1::colocar_diamantes(restantes-1, tablero.tail)
-        }
-        else
-        {
-          tablero.head::colocar_diamantes(restantes, tablero.tail)
-        }
-      }
+      tablero.map(x => if(x == 0){new Random().nextInt(8)+1}else x)
     }
     
     val tablero_ = caer_diamantes(0, 0, width, length, tablero)
-    colocar_diamantes(count(0, tablero_), tablero_)
+    colocar_diamantes(tablero_)
   }
 
   /*
@@ -376,7 +346,7 @@ object Funciones_tablero
   def comprobar_fichas_alineadas_aux(eedd: List[Int], tablero: List[Int]) : Int =
   {
     // La eedd esta vacia
-    if (eedd == Nil)
+    if (eedd.isEmpty)
     {
       0
     }
@@ -408,7 +378,7 @@ object Funciones_tablero
   def contar(valor: Int, eedd: List[Int], contador: Int) : Int =
   {
     // Si la fila esta vacia o el valor no es igual al sucesor
-    if ((eedd == Nil) || (valor != eedd.head))
+    if (eedd.isEmpty || (valor != eedd.head))
     {
       contador
     }
@@ -427,7 +397,7 @@ object Funciones_tablero
   def eliminar_fichas_fila(valor: Int, cont: Int, num_fila: Int, num_columna: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
   {
     // Ya se ha revisado toda la fila y/o ya se han eliminado las fichas
-    if (((num_columna + 1) > width) || (cont == 9999999))
+    if (((num_columna + 1) > width) || (cont == Int.MaxValue))
     {
       tablero
     }
@@ -458,7 +428,7 @@ object Funciones_tablero
           }
           // cont >= 3 --> Ya se han eliminado las fichas
           else {
-            eliminar_fichas_fila(valor, 9999999, num_fila, num_columna + 1, width, length, tablero) // Asignamos al contador un numero muy grande para que nunca coincida --> necesario para la condicion de parada
+            eliminar_fichas_fila(valor, Int.MaxValue, num_fila, num_columna + 1, width, length, tablero) // Asignamos al contador el número entero mayor posible para que nunca coincida --> necesario para la condicion de parada
           }
         }
         // No se ha modificado previamente el tablero en ningun momento
@@ -477,7 +447,7 @@ object Funciones_tablero
   def eliminar_fichas_columna(valor: Int, cont: Int, num_fila: Int, num_columna: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
   {
     // se ha recorrido toda la columna y/o ya se han eliminado las fichas
-    if (((num_fila + 1) > length) || (cont == 9999999))
+    if (((num_fila + 1) > length) || (cont == Int.MaxValue))
     {
       tablero
     }
@@ -514,7 +484,7 @@ object Funciones_tablero
           // cont >= 3 --> Ya se han eliminado las fichas
           else
           {
-            eliminar_fichas_columna(valor, 9999999, num_fila + 1, num_columna, width, length, tablero)   // Asignamos al contador un numero muy grande para que nunca coincida --> necesario para la condicion de parada
+            eliminar_fichas_columna(valor, Int.MaxValue, num_fila + 1, num_columna, width, length, tablero)   // Asignamos al contador el númeo entero mayor posible para que nunca coincida --> necesario para la condicion de parada
           }
         }
         // No se ha modificado previamente el tablero en ningun momento

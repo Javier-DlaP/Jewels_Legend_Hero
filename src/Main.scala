@@ -1,4 +1,6 @@
 import Funciones_tablero._
+
+import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 
 object Main
@@ -29,7 +31,8 @@ object Main
   * JUGAR
   * El desarrollo del juego
   */
-  def jugar (width: Int, length: Int, tablero: List[Int]): Unit =
+  @tailrec
+  def jugar(width: Int, length: Int, tablero: List[Int]): Unit =
   {
     imprimir_tablero(width, length, tablero)
 
@@ -81,7 +84,8 @@ object Main
   * CONTINUAR_JUEGO
   * El desarrollo del juego
   */
-  def continuar_juego (): Boolean =
+  @tailrec
+  def continuar_juego(): Boolean =
   {
     println("\n--> Pulsa ENTER para seguir jugando o escribe EXIT para abandonar el juego")
     val jugar: String = readLine()
