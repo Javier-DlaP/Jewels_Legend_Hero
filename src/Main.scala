@@ -31,6 +31,37 @@ object Main
   */
   def jugar (width: Int, length: Int, tablero: List[Int]): Unit =
   {
+
+    /*
+    * CONTINUAR_JUEGO
+    * El desarrollo del juego
+    */
+    def continuar_juego (): Boolean =
+    {
+      println("\n--> Pulsa ENTER para seguir jugando o escribe EXIT para abandonar el juego")
+      val jugar: String = readLine()
+
+      // Enter
+      if(jugar == "")
+      {
+        true
+      }
+      else
+      {
+        // Exit
+        if (jugar.toUpperCase() == "EXIT")
+        {
+          false
+        }
+        // Otra cosa
+        else
+        {
+          println("\n--> No entiendo tu instruccion")
+          continuar_juego ()
+        }
+      }
+    }
+
     imprimir_tablero(width, length, tablero)
 
     println("-- Introduce la posicion de la ficha que quieres mover --")
@@ -76,35 +107,4 @@ object Main
       jugar (width, length, tablero)
     }
   }
-
-  /*
-  * CONTINUAR_JUEGO
-  * El desarrollo del juego
-  */
-  def continuar_juego (): Boolean =
-  {
-    println("\n--> Pulsa ENTER para seguir jugando o escribe EXIT para abandonar el juego")
-    val jugar: String = readLine()
-
-    // Enter
-    if(jugar == "")
-    {
-      true
-    }
-    else
-    {
-      // Exit
-      if (jugar.toUpperCase() == "EXIT")
-      {
-        false
-      }
-      // Otra cosa
-      else
-      {
-        println("\n--> No entiendo tu instruccion")
-        continuar_juego ()
-      }
-    }
-  }
-
 }
