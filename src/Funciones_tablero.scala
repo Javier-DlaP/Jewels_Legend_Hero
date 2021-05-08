@@ -1,13 +1,6 @@
 import scala.annotation.tailrec
 import Funciones_lista._
-
 import scala.io.StdIn.readLine
-import Funciones_tablero.eliminar_fichas_columna
-import jdk.internal.jline.console.WCWidth
-import sun.security.util.Length
-
-import java.io.IOException
-
 
 object Funciones_tablero
 {
@@ -129,6 +122,7 @@ object Funciones_tablero
   * IMPRIMIR_POSICIONES_COLUMNAS
   * Imprime encima del tablero una fila de numeros para que se vean mejor el numero de cada columna
   */
+  @tailrec
   def imprimir_posiciones_columnas(num: Int, width: Int): Unit =
   {
     if (num == width)
@@ -485,7 +479,7 @@ object Funciones_tablero
     // se ha recorrido toda la columna y/o ya se han eliminado las fichas
     if (((num_fila + 1) > length) || (cont == 9999999))
     {
-      tablero;
+      tablero
     }
     else
     {
@@ -566,7 +560,7 @@ object Funciones_tablero
       // si no esta dentro del rango, se vuelve a pedir el valor
       if ((num_fila < 0) || (num_fila > (length - 1)))
       {
-        println("\nEl valor debe estar dentro del rango [0, 6]\n")
+        println("\nEl valor debe estar dentro del rango [0, 8]\n")
         pedir_num_fila(length)
       }
       else
@@ -576,11 +570,9 @@ object Funciones_tablero
     }
     catch
     {
-      case ex: NumberFormatException =>
-      {
+      case _: NumberFormatException =>
         println("Tiene que ser un numero entero")
         pedir_num_fila (length)
-      }
     }
   }
 
@@ -609,11 +601,9 @@ object Funciones_tablero
     }
     catch
     {
-      case ex: NumberFormatException =>
-      {
+      case _: NumberFormatException =>
         println("Tiene que ser un numero entero")
         pedir_num_columna (width)
-      }
     }
   }
 

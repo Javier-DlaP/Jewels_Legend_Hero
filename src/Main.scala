@@ -1,6 +1,4 @@
 import Funciones_tablero._
-import Funciones_lista._
-
 import scala.io.StdIn.readLine
 
 object Main
