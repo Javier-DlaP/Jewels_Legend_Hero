@@ -290,30 +290,18 @@ object Funciones_tablero
             eliminar_fichas_fila(valor, cont + 1, num_fila, num_columna + 1, width, length, tablero_)
           }
           // El elem no se elimina
-          else {
-            // Si el cont > 0 --> el tablero ha sido modificado previamente
-            if (cont > 0) {
-              // No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
-              if (cont < 3) {
-                if (cont == 2) {
-                  val tablero1 = set(valor, num_fila, num_columna - 1, width, length, tablero)
-                  val tablero2 = set(valor, num_fila, num_columna - 2, width, length, tablero1)
-                  eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, tablero2) // Se vuelve a poner el cont a 0
-                }
-                // cont == 1
-                else {
-                  val tablero1 = set(valor, num_fila, num_columna - 1, width, length, tablero)
-                  eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, tablero1) // Se vuelve a poner el cont a 0
-                }
-              }
+          else 
+          {
+            (cont: Int) match
+            {
+              // cont = 0 --> No se ha modificado previamente el tablero en ningun momento
+              case 0 => eliminar_fichas_fila(valor, cont, num_fila, num_columna + 1, width, length, tablero)
+                // cont == 1 --> el tablero ha sido modificado previamente --> No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
+              case 1 => eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, set(valor, num_fila, num_columna - 1, width, length, tablero)) // Se vuelve a poner el cont a 0
+                // cont == 2 -->  el tablero ha sido modificado previamente --> No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
+              case 2 => eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, set(valor, num_fila, num_columna - 2, width, length, set(valor, num_fila, num_columna - 1, width, length, tablero))) // Se vuelve a poner el cont a 0
               // cont >= 3 --> Ya se han eliminado las fichas
-              else {
-                eliminar_fichas_fila(valor, Int.MaxValue, num_fila, num_columna + 1, width, length, tablero) // Asignamos al contador el número entero mayor posible para que nunca coincida --> necesario para la condicion de parada
-              }
-            }
-            // No se ha modificado previamente el tablero en ningun momento
-            else {
-              eliminar_fichas_fila(valor, cont, num_fila, num_columna + 1, width, length, tablero)
+              case _ => eliminar_fichas_fila(valor, Int.MaxValue, num_fila, num_columna + 1, width, length, tablero) // Asignamos al contador el número entero mayor posible para que nunca coincida --> necesario para la condicion de parada
             }
           }
         }
@@ -330,18 +318,12 @@ object Funciones_tablero
         val fila = row(num_fila, width, length, tablero)
         val valor = comprobar_fichas_alineadas_aux(fila, tablero)
 
-        // Si hay fichas alineadas --> valor es distinto de cero
-        if (valor != 0)
+        (valor: Int) match
         {
-          val tablero1 = eliminar_fichas_fila(valor, 0, num_fila, 0, width, length, tablero)// eliminar fichas
-          //println("--> Se eliminan")
-          val tablero2 = nuevos_diamantes(width, length, tablero1)
-          comprobar_fichas_alineadas (width, length, tablero2)
-        }
-        // No hay fichas alineadas
-        else
-        {
-          comprobar_fichas_alineadas_fila (num_fila + 1, width, length, tablero)
+          // valor = 0 --> no hay fichas alineadas
+          case 0 => comprobar_fichas_alineadas_fila (num_fila + 1, width, length, tablero)
+          // valor !=0 --> Si hay fichas alineadas 
+          case _ => comprobar_fichas_alineadas (width, length, nuevos_diamantes(width, length, eliminar_fichas_fila(valor, 0, num_fila, 0, width, length, tablero)))
         }
       }
     }
@@ -378,35 +360,16 @@ object Funciones_tablero
           // El elem no se elimina
           else
           {
-            // Si el cont > 0 --> el tablero ha sido modificado previamente
-            if (cont > 0)
+            (cont: Int) match
             {
-              // No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
-              if (cont < 3)
-              {
-                if (cont == 2)
-                {
-                  val tablero1 = set( valor, num_fila - 1, num_columna, width, length, tablero)
-                  val tablero2 = set( valor, num_fila - 2, num_columna, width, length, tablero1)
-                  eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, tablero2)   // Se vuelve a poner el cont a 0
-                }
-                // cont == 1
-                else
-                {
-                  val tablero1 = set( valor, num_fila - 1, num_columna, width, length, tablero)
-                  eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, tablero1)   // Se vuelve a poner el cont a 0
-                }
-              }
+              // cont == 0 --> No se ha modificado previamente el tablero en ningun momento
+              case 0 => eliminar_fichas_columna(valor, cont, num_fila + 1, num_columna, width, length, tablero)
+              // cont == 1 --> el tablero ha sido modificado previamente --> no tienen el minimo necesario para eliminarse
+              case 1 => eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, set( valor, num_fila - 1, num_columna, width, length, tablero))   // Se vuelve a poner el cont a 0
+              // cont == 2 --> el tablero ha sido modificado previamente --> no tienen el minimo necesario para eliminarse
+              case 2 => eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, set( valor, num_fila - 2, num_columna, width, length, set( valor, num_fila - 1, num_columna, width, length, tablero)))   // Se vuelve a poner el cont a 0
               // cont >= 3 --> Ya se han eliminado las fichas
-              else
-              {
-                eliminar_fichas_columna(valor, Int.MaxValue, num_fila + 1, num_columna, width, length, tablero)   // Asignamos al contador el númeo entero mayor posible para que nunca coincida --> necesario para la condicion de parada
-              }
-            }
-            // No se ha modificado previamente el tablero en ningun momento
-            else
-            {
-              eliminar_fichas_columna(valor, cont, num_fila + 1, num_columna, width, length, tablero)
+              case _ => eliminar_fichas_columna(valor, Int.MaxValue, num_fila + 1, num_columna, width, length, tablero)   // Asignamos al contador el númeo entero mayor posible para que nunca coincida --> necesario para la condicion de parada
             }
           }
         }
@@ -423,18 +386,12 @@ object Funciones_tablero
         val columna = column(num_columna, width, length, tablero)
         val valor = comprobar_fichas_alineadas_aux(columna, tablero)
 
-        // Si hay fichas alineadas --> valor es distinto de cero
-        if (valor != 0)
+        (valor: Int) match
         {
-          val tablero1 = eliminar_fichas_columna(valor, 0, 0, num_columna, width, length, tablero)    // eliminar fichas
-          //println("\n--> Se eliminan\n")
-          val tablero2 = nuevos_diamantes(width, length, tablero1)
-          comprobar_fichas_alineadas (width, length, tablero2)
-        }
-        // No hay fichas alineadas
-        else
-        {
-          comprobar_fichas_alineadas_columna (num_columna + 1, width, length, tablero)
+            // valor == 0 --> No hay fichas alineadas
+            case 0 => comprobar_fichas_alineadas_columna (num_columna + 1, width, length, tablero)
+            // valor != 0 --> Si hay fichas alineadas 
+            case _ => comprobar_fichas_alineadas (width, length, nuevos_diamantes(width, length, eliminar_fichas_columna(valor, 0, 0, num_columna, width, length, tablero)))
         }
       }
     }

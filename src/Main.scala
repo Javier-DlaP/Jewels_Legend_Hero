@@ -37,7 +37,7 @@ object Main
 
     /*
     * CONTINUAR_JUEGO
-    * El desarrollo del juego
+    * El juego continua (dando a ENTER) o se detiene poniendo "exit"
     */
     @tailrec
     def continuar_juego(): Boolean =
