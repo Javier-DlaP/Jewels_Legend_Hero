@@ -11,3 +11,10 @@ bin/
 .project
 out/
 *.class
+.metals/
+.vscode/
+*.db
+*.log
+*.json
+*.h2
+*.lock
