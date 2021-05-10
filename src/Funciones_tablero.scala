@@ -3,6 +3,7 @@ import Funciones_lista._
 
 import scala.io.StdIn.readLine
 import scala.util.Random
+import scala.collection.parallel.immutable.ParVector
 
 object Funciones_tablero
 {
@@ -19,6 +20,7 @@ object Funciones_tablero
   /*
   * IMPRIMIR_TABLERO
   * Imprime con diferentes colores el tablero introducido en forma de lista
+  * (No se puede realizar con ParVector ya que se puede imprimir en desorden)
   */
   def imprimir_tablero(width: Int, length: Int, tablero: List[Int]): Unit =
   {
@@ -86,9 +88,9 @@ object Funciones_tablero
       {
         print(num_fila)
         print("| ")
-        val tablero_ = imprimir_fila_tablero(width, tablero)
+        val tablero_restante = imprimir_fila_tablero(width, tablero)
         println()
-        imprimir_filas_tablero(num_fila + 1, width, length - 1, tablero_)
+        imprimir_filas_tablero(num_fila + 1, width, length - 1, tablero_restante)
       }
     }
 
@@ -132,6 +134,7 @@ object Funciones_tablero
     /*
     * QUEDAR_POR_CAER
     * Hace caer cada diamante una posición hacia abajo hasta que todos los diamantes se encuentran sobre otro diamante
+    * (No se puede realizar con ParVector ya que sino unas piezas se podrían mover sobre otras o hacer desaparecer alguna)
     */
     @tailrec
     def caer_diamantes(x: Int, y: Int, width: Int, length: Int, tablero: List[Int]): List[Int] =
@@ -142,7 +145,7 @@ object Funciones_tablero
       * Comprueba si falta por caer algun diamante en todo el tablero
       */
       @tailrec
-      def quedar_por_caer(columnas_restantes: Int, width: Int, length: Int, tablero: List[Int]): Boolean =
+      def quedar_por_caer(columnas_restantes: Int, width: Int, length: Int, tablero: List[Int], columnas: ParVector[List[Int]]): Boolean =
       {
 
         /*
@@ -150,7 +153,7 @@ object Funciones_tablero
         * Comprueba si falta por caer algun diamante en una columna del tablero
         */
         @tailrec
-        def quedar_por_caer_columna(encima: Int, columna: List[Int]): Boolean =
+        def quedar_por_caer_columna(encima: Int)(columna: List[Int]): Boolean =
         {
           if (columna.isEmpty)
           {
@@ -160,13 +163,13 @@ object Funciones_tablero
           {
             if (columna.head != 0)
             {
-              quedar_por_caer_columna(columna.head, columna.tail)
+              quedar_por_caer_columna(columna.head)(columna.tail)
             }
             else
             {
               if (encima == 0)
               {
-                quedar_por_caer_columna(columna.head, columna.tail)
+                quedar_por_caer_columna(columna.head)(columna.tail)
               }
               else
               {
@@ -178,17 +181,18 @@ object Funciones_tablero
 
         if(columnas_restantes == 0)
         {
-          false
+          // Currying
+          columnas.map(quedar_por_caer_columna(0)_).reduce(_ || _)
         }
         else
         {
-          quedar_por_caer_columna(0, column(columnas_restantes-1, width, length, tablero)) ||  quedar_por_caer(columnas_restantes-1, width, length, tablero)
+          quedar_por_caer(columnas_restantes-1, width, length, tablero, columnas :+ column(columnas_restantes-1, width, length, tablero))
         }
       }
 
       if(length == x)
       {
-        if(quedar_por_caer(width, width, length, tablero))
+        if(quedar_por_caer(width, width, length, tablero, new ParVector()))
         {
           caer_diamantes(0, 0, width, length, tablero)
         }
@@ -232,7 +236,7 @@ object Funciones_tablero
     */
     def colocar_diamantes(tablero: List[Int]): List[Int] =
     {
-      tablero.map(x => if(x == 0){new Random().nextInt(8)+1}else x)
+      tablero.par.map(x => if(x == 0){new Random().nextInt(8)+1}else x).toList
     }
     
     val tablero_ = caer_diamantes(0, 0, width, length, tablero)
@@ -256,6 +260,7 @@ object Funciones_tablero
   * COMPROBAR_FICHAS_ALINEADAS
   * Comprueba fichas alineadas
   * Devuelve el tablero
+  * (Es funcionamiento de la función es secuencial por lo que no se puede aplicar ParVector de ninguna manera)
   */
   def comprobar_fichas_alineadas (width: Int, length: Int, tablero: List[Int]) : List[Int] =
   {

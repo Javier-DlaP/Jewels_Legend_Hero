@@ -5,6 +5,7 @@ object Funciones_lista
   /*
   * IMPRIMIR_LISTA
   * Impresión de una lista en forma de matriz a partir de esta y sus dimensiones
+  * (No se puede realizar con ParVector ya que se imprimir en desorden)
   */
   @tailrec
   def imprimir_lista(width: Int, length: Int, matrix: List[Int]): Unit =
@@ -38,26 +39,31 @@ object Funciones_lista
   /*
   * GET
   * Obtiene el valor de una posición concreta de una lista en forma de matriz a partir de la posición, la matriz y sus dimensiones
+  * (No se cambia a ParVector y se accede ya que la conversión tarda más tiempo de ejecución que acceder directamente)
   */
   def get(x: Int, y: Int, width: Int, length: Int, matrix: List[Int]): Int =
   {
     assert(x<length && y<width)
+    //matrix.par(x*width+y).toList
     matrix(x*width+y)
   }
 
   /*
   * SET
   * Fija un valor en una posición concreta de una lista en forma de matriz a partir del valor, la posición, la matriz y sus dimensiones
+  * (No se cambia a ParVector y se modifica ya que la conversión tarda más tiempo de ejecución que modificar directamente)
   */
   def set(valor:Int, x: Int, y: Int, width: Int, length: Int, matrix: List[Int]): List[Int] =
   {
     assert(x<length && y<width)
+    //matrix.par.updated(x*width+y, valor).toList
     matrix.updated(x*width+y, valor)
   }
 
   /*
   * ROW
   * Obtiene la fila especificada a partir de la requerida, la matriz y sus dimensiones
+  * (No se puede realizar con ParVector ya que se pueden guardar en desorden)
   */
   def row(x: Int, width: Int, length: Int, matrix: List[Int]): List[Int] =
   {
@@ -84,6 +90,7 @@ object Funciones_lista
         }
       }
     }
+
     assert(x<length)
     row_aux(0, x*width, (x+1)*width-1, matrix)
   }
@@ -91,6 +98,7 @@ object Funciones_lista
   /*
   * COLUMN
   * Obtiene la columna especificada a partir de la requerida, la matriz y sus dimensiones
+  * (No se puede realizar con ParVector ya que se pueden guardar en desorden)
   */
   def column(y: Int, width: Int, length: Int, matrix: List[Int]): List[Int] =
   {
@@ -117,6 +125,7 @@ object Funciones_lista
         }
       }
     }
+
     assert(y<width)
     column_aux(0, y, width, length, matrix)
   }
