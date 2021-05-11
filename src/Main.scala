@@ -1,4 +1,5 @@
 import Funciones_tablero._
+import IA._
 
 import scala.annotation.tailrec
 import scala.io.StdIn.readLine
@@ -11,12 +12,12 @@ object Main
     val width = 7
     val length = 9
 
-    val tablero1 = crear_tablero(width, length)                             // Creamos el tablero que esta vacio
+    val tablero1 = crear_tablero(width, length)                                   // Creamos el tablero que esta vacio
     //imprimir_tablero(width, length, tablero)
 
-    val tablero2 = nuevos_diamantes(width, length, tablero1)               // Rellenamos el tablero con los diamantes
+    val tablero2 = nuevos_diamantes(width, length, tablero1, false)               // Rellenamos el tablero con los diamantes
 
-    val tablero3 = comprobar_fichas_alineadas (width, length, tablero2)    // Comprobamos si hay fichas que se pueden eliminar
+    val tablero3 = comprobar_fichas_alineadas (width, length, tablero2, false)    // Comprobamos si hay fichas que se pueden eliminar
 
     // Si ha habido eliminacion de fichas se imprime el tablero inicial, si no no porque apareceria duplicado
     if (tablero2 != tablero3)
@@ -60,8 +61,15 @@ object Main
         // Otra cosa
         else
         {
-          println("\n--> No entiendo tu instruccion")
-          continuar_juego ()
+          if ((jugar.toUpperCase() == "AYUDA") || (jugar.toUpperCase() == "HELP"))
+          {
+            ayuda(width, length, tablero)
+          }
+          else
+          {
+            println("\n--> No entiendo tu instruccion")
+            continuar_juego ()
+          }
         }
       }
     }
@@ -89,7 +97,7 @@ object Main
       imprimir_tablero(width, length, tablero1)
 
       // Comprobamos si hay fichas que se pueden eliminar
-      val tablero2 = comprobar_fichas_alineadas (width, length, tablero1)
+      val tablero2 = comprobar_fichas_alineadas (width, length, tablero1, false)
 
       // Comprobamos que se han eliminado fichas --> si no, se vuelve al tablero antes del movimiento de las fichas
       val tablero3 = comprobar_hay_cambios (fila_inicial, columna_inicial, fila_final, columna_final, width, length, tablero1, tablero2)

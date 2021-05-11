@@ -128,7 +128,7 @@ object Funciones_tablero
   * QUEDAR_POR_CAER
   * Hace caer los diamantes del tablero introducido y caen nuevas fichas
   */
-  def nuevos_diamantes(width: Int, length: Int, tablero: List[Int]): List[Int] =
+  def nuevos_diamantes(width: Int, length: Int, tablero: List[Int], ia: Boolean): List[Int] =
   {
 
     /*
@@ -232,15 +232,19 @@ object Funciones_tablero
 
     /*
     * COLOCAR_DIAMANTES
-    * Se colocan fichas con un valor entre el 1 y el 8 en las posiciones sin ninguna de estas
+    * ia = false --> Se colocan fichas con un valor entre el 1 y el 8 en las posiciones cuyo valor es 0
+    * ia = true -->  Se colocan fichas con un valor -1 en las posiciones cuyo valor es 0
+    * // si x == 0 --> (si IA --> lo pone a -1  
+    *                   si no -->random) 
+    * // si no --> se queda igual
     */
-    def colocar_diamantes(tablero: List[Int]): List[Int] =
+    def colocar_diamantes(tablero: List[Int], ia: Boolean): List[Int] =
     {
-      tablero.par.map(x => if(x == 0){new Random().nextInt(8)+1}else x).toList
+      tablero.par.map(x => if(x == 0){if(ia) {-1} else new Random().nextInt(8)+1} else x).toList  
     }
     
     val tablero_ = caer_diamantes(0, 0, width, length, tablero)
-    colocar_diamantes(tablero_)
+    colocar_diamantes(tablero_, ia)
   }
 
   /*
@@ -262,7 +266,7 @@ object Funciones_tablero
   * Devuelve el tablero
   * (Es funcionamiento de la función es secuencial por lo que no se puede aplicar ParVector de ninguna manera)
   */
-  def comprobar_fichas_alineadas (width: Int, length: Int, tablero: List[Int]) : List[Int] =
+  def comprobar_fichas_alineadas (width: Int, length: Int, tablero: List[Int], ia: Boolean) : List[Int] =
   {
 
     /*
@@ -271,7 +275,7 @@ object Funciones_tablero
     * Devuelve el tablero
     */
     @tailrec
-    def comprobar_fichas_alineadas_fila(num_fila: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
+    def comprobar_fichas_alineadas_fila(num_fila: Int, width: Int, length: Int, tablero: List[Int], ia: Boolean) : List[Int] =
     {
 
       /*
@@ -279,7 +283,7 @@ object Funciones_tablero
       * Las fichas que se eliminan se ponen con valor 0
       */
       @tailrec
-      def eliminar_fichas_fila(valor: Int, cont: Int, num_fila: Int, num_columna: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
+      def eliminar_fichas_fila(valor: Int, cont: Int, num_fila: Int, num_columna: Int, width: Int, length: Int, tablero: List[Int], ia: Boolean) : List[Int] =
       {
         // Ya se ha revisado toda la fila y/o ya se han eliminado las fichas
         if (((num_columna + 1) > width) || (cont == Int.MaxValue))
@@ -292,7 +296,7 @@ object Funciones_tablero
           if (valor == get(num_fila, num_columna, width, length, tablero))
           {
             val tablero_ = set( 0, num_fila, num_columna, width, length, tablero)
-            eliminar_fichas_fila(valor, cont + 1, num_fila, num_columna + 1, width, length, tablero_)
+            eliminar_fichas_fila(valor, cont + 1, num_fila, num_columna + 1, width, length, tablero_, ia)
           }
           // El elem no se elimina
           else 
@@ -300,13 +304,13 @@ object Funciones_tablero
             (cont: Int) match
             {
               // cont = 0 --> No se ha modificado previamente el tablero en ningun momento
-              case 0 => eliminar_fichas_fila(valor, cont, num_fila, num_columna + 1, width, length, tablero)
-                // cont == 1 --> el tablero ha sido modificado previamente --> No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
-              case 1 => eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, set(valor, num_fila, num_columna - 1, width, length, tablero)) // Se vuelve a poner el cont a 0
-                // cont == 2 -->  el tablero ha sido modificado previamente --> No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
-              case 2 => eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, set(valor, num_fila, num_columna - 2, width, length, set(valor, num_fila, num_columna - 1, width, length, tablero))) // Se vuelve a poner el cont a 0
+              case 0 => eliminar_fichas_fila(valor, cont, num_fila, num_columna + 1, width, length, tablero, ia)
+              // cont == 1 --> el tablero ha sido modificado previamente --> No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
+              case 1 => eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, set(valor, num_fila, num_columna - 1, width, length, tablero), ia) // Se vuelve a poner el cont a 0
+              // cont == 2 -->  el tablero ha sido modificado previamente --> No tienen el minimo necesario para eliminarse --> se les vuelve a asignar su valor actual
+              case 2 => eliminar_fichas_fila(valor, 0, num_fila, num_columna + 1, width, length, set(valor, num_fila, num_columna - 2, width, length, set(valor, num_fila, num_columna - 1, width, length, tablero)), ia) // Se vuelve a poner el cont a 0
               // cont >= 3 --> Ya se han eliminado las fichas
-              case _ => eliminar_fichas_fila(valor, Int.MaxValue, num_fila, num_columna + 1, width, length, tablero) // Asignamos al contador el número entero mayor posible para que nunca coincida --> necesario para la condicion de parada
+              case _ => eliminar_fichas_fila(valor, Int.MaxValue, num_fila, num_columna + 1, width, length, tablero, ia) // Asignamos al contador el número entero mayor posible para que nunca coincida --> necesario para la condicion de parada
             }
           }
         }
@@ -326,9 +330,9 @@ object Funciones_tablero
         (valor: Int) match
         {
           // valor = 0 --> no hay fichas alineadas
-          case 0 => comprobar_fichas_alineadas_fila (num_fila + 1, width, length, tablero)
+          case 0 => comprobar_fichas_alineadas_fila (num_fila + 1, width, length, tablero, ia)
           // valor !=0 --> Si hay fichas alineadas 
-          case _ => comprobar_fichas_alineadas (width, length, nuevos_diamantes(width, length, eliminar_fichas_fila(valor, 0, num_fila, 0, width, length, tablero)))
+          case _ => comprobar_fichas_alineadas (width, length, nuevos_diamantes(width, length, eliminar_fichas_fila(valor, 0, num_fila, 0, width, length, tablero, ia), ia), ia)
         }
       }
     }
@@ -339,7 +343,7 @@ object Funciones_tablero
     * Devuelve el tablero
     */
     @tailrec
-    def comprobar_fichas_alineadas_columna(num_columna: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
+    def comprobar_fichas_alineadas_columna(num_columna: Int, width: Int, length: Int, tablero: List[Int], ia: Boolean) : List[Int] =
     {
 
       /*
@@ -347,7 +351,7 @@ object Funciones_tablero
       * Elimina las fichas de la columna
       */
       @tailrec
-      def eliminar_fichas_columna(valor: Int, cont: Int, num_fila: Int, num_columna: Int, width: Int, length: Int, tablero: List[Int]) : List[Int] =
+      def eliminar_fichas_columna(valor: Int, cont: Int, num_fila: Int, num_columna: Int, width: Int, length: Int, tablero: List[Int], ia: Boolean) : List[Int] =
       {
         // se ha recorrido toda la columna y/o ya se han eliminado las fichas
         if (((num_fila + 1) > length) || (cont == Int.MaxValue))
@@ -360,7 +364,7 @@ object Funciones_tablero
           if (valor == get(num_fila, num_columna, width, length, tablero))
           {
             val tablero_ = set( 0, num_fila, num_columna, width, length, tablero)
-            eliminar_fichas_columna(valor, cont + 1, num_fila + 1, num_columna, width, length, tablero_)
+            eliminar_fichas_columna(valor, cont + 1, num_fila + 1, num_columna, width, length, tablero_, ia)
           }
           // El elem no se elimina
           else
@@ -368,13 +372,13 @@ object Funciones_tablero
             (cont: Int) match
             {
               // cont == 0 --> No se ha modificado previamente el tablero en ningun momento
-              case 0 => eliminar_fichas_columna(valor, cont, num_fila + 1, num_columna, width, length, tablero)
+              case 0 => eliminar_fichas_columna(valor, cont, num_fila + 1, num_columna, width, length, tablero, ia)
               // cont == 1 --> el tablero ha sido modificado previamente --> no tienen el minimo necesario para eliminarse
-              case 1 => eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, set( valor, num_fila - 1, num_columna, width, length, tablero))   // Se vuelve a poner el cont a 0
+              case 1 => eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, set( valor, num_fila - 1, num_columna, width, length, tablero), ia)   // Se vuelve a poner el cont a 0
               // cont == 2 --> el tablero ha sido modificado previamente --> no tienen el minimo necesario para eliminarse
-              case 2 => eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, set( valor, num_fila - 2, num_columna, width, length, set( valor, num_fila - 1, num_columna, width, length, tablero)))   // Se vuelve a poner el cont a 0
+              case 2 => eliminar_fichas_columna(valor, 0, num_fila + 1, num_columna, width, length, set( valor, num_fila - 2, num_columna, width, length, set( valor, num_fila - 1, num_columna, width, length, tablero)), ia)   // Se vuelve a poner el cont a 0
               // cont >= 3 --> Ya se han eliminado las fichas
-              case _ => eliminar_fichas_columna(valor, Int.MaxValue, num_fila + 1, num_columna, width, length, tablero)   // Asignamos al contador el númeo entero mayor posible para que nunca coincida --> necesario para la condicion de parada
+              case _ => eliminar_fichas_columna(valor, Int.MaxValue, num_fila + 1, num_columna, width, length, tablero, ia)   // Asignamos al contador el númeo entero mayor posible para que nunca coincida --> necesario para la condicion de parada
             }
           }
         }
@@ -394,9 +398,9 @@ object Funciones_tablero
         (valor: Int) match
         {
             // valor == 0 --> No hay fichas alineadas
-            case 0 => comprobar_fichas_alineadas_columna (num_columna + 1, width, length, tablero)
+            case 0 => comprobar_fichas_alineadas_columna (num_columna + 1, width, length, tablero, ia)
             // valor != 0 --> Si hay fichas alineadas 
-            case _ => comprobar_fichas_alineadas (width, length, nuevos_diamantes(width, length, eliminar_fichas_columna(valor, 0, 0, num_columna, width, length, tablero)))
+            case _ => comprobar_fichas_alineadas (width, length, nuevos_diamantes(width, length, eliminar_fichas_columna(valor, 0, 0, num_columna, width, length, tablero, ia), ia), ia)
         }
       }
     }
@@ -442,8 +446,8 @@ object Funciones_tablero
         val valor = eedd.head
         val contador = 0                                          // Cuenta las veces que está repetido un valor
 
-        // Si el valor es no esta 3 veces seguidas o más
-        if (contar (valor, eedd, contador) < 3)
+        // Si el valor no esta 3 veces seguidas o más  O el valor es -1
+        if ((contar (valor, eedd, contador) < 3) || (valor == -1))
         {
           comprobar_fichas_alineadas_aux(eedd.tail, tablero)     // Comprueba con el siguiente elemento
         }
@@ -456,10 +460,10 @@ object Funciones_tablero
     }
 
     // Comprobamos mirando la fila
-    val tablero1 = comprobar_fichas_alineadas_fila (0, width, length, tablero)
+    val tablero1 = comprobar_fichas_alineadas_fila (0, width, length, tablero, ia)
 
     // Comprobamos mirando la columna
-    comprobar_fichas_alineadas_columna (0, width, length, tablero1)
+    comprobar_fichas_alineadas_columna (0, width, length, tablero1, ia)
   }
 
   /*
@@ -483,7 +487,7 @@ object Funciones_tablero
 
   /*
   * PEDIR_NUM_FILA
-  * Pide el dato por pantalla y cpmrueba que esté dentro del rango
+  * Pide el dato por pantalla y comprueba que esté dentro del rango
   */
   def pedir_num_fila (length: Int) : Int =
   {
