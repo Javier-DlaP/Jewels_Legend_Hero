@@ -41,11 +41,15 @@ object Main
     * El juego continua (dando a ENTER) o se detiene poniendo "exit"
     */
     @tailrec
-    def continuar_juego(): Boolean =
+    def continuar_juego(tablero: List[Int]): Boolean =
     {
-      println("\n--> Pulsa ENTER para seguir jugando o escribe EXIT para abandonar el juego")
+      println("\n--> Pulsa ENTER para seguir jugando, recibe ayuda con HELP o escribe EXIT para abandonar el juego")
       val jugar: String = readLine()
-
+      
+      // jugar match {
+      //   case "" => true
+      //   case toUpperCase()
+      // }
       // Enter
       if(jugar == "")
       {
@@ -63,12 +67,20 @@ object Main
         {
           if ((jugar.toUpperCase() == "AYUDA") || (jugar.toUpperCase() == "HELP"))
           {
-            ayuda(width, length, tablero)
+            val intercambio_fichas = ayuda(width, length, tablero)
+            // No hay ningún movimiento disponible
+            if(intercambio_fichas == (-1, -1, -1, -1)){
+              println("No hay movimientos disponibles")
+            // Movimiento recomendado
+            } else {
+              print("\nfila: "+intercambio_fichas._1+", columna: "+intercambio_fichas._2+" --> fila: "+intercambio_fichas._3+", columna: "+intercambio_fichas._4+"\n")
+            }
+            true
           }
           else
           {
             println("\n--> No entiendo tu instruccion")
-            continuar_juego ()
+            continuar_juego (tablero)
           }
         }
       }
@@ -103,7 +115,7 @@ object Main
       val tablero3 = comprobar_hay_cambios (fila_inicial, columna_inicial, fila_final, columna_final, width, length, tablero1, tablero2)
 
       // Continuar el juego o exit
-      if (continuar_juego ())
+      if (continuar_juego(tablero3))
       {
         // Seguimos el juego
         jugar (width, length, tablero3)
