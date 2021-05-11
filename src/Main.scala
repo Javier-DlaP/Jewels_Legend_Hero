@@ -45,11 +45,7 @@ object Main
     {
       println("\n--> Pulsa ENTER para seguir jugando, recibe ayuda con HELP o escribe EXIT para abandonar el juego")
       val jugar: String = readLine()
-      
-      // jugar match {
-      //   case "" => true
-      //   case toUpperCase()
-      // }
+
       // Enter
       if(jugar == "")
       {

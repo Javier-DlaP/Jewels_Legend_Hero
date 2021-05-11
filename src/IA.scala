@@ -13,11 +13,16 @@ object IA
     */
     def ayuda(width: Int, length: Int, tablero: List[Int]): (Int, Int, Int, Int) =
     {
+        imprimir_tablero(width, length, tablero)
         val movimientos = movimientos_posibles(width, length, tablero)
-        val recomendacion = movimientos.filter(_._5.count(_ == -1) > 0).reduce((x, y) => if(x._5.count(_ == -1)>y._5.count(_ == -1)){x}else{y})
+        val movimientos_puntuados = movimientos.map((x) => (x._1, x._2, x._3, x._4, x._5, x._5.count(_ == -1)))
+        val movimientos_filtrados = movimientos_puntuados.filter(_._6 > 0)
         if(movimientos.isEmpty){
             (-1, -1, -1, -1)
         } else {
+            // Se utiliza fold y no reduce para que ocurra ningún error en el caso de que solo haya un movimiento
+            // El valor inicial elegido es uno que siempre será peor que el resto
+            val recomendacion = movimientos_filtrados.fold((-1,-1,-1,-1,List(),-1))((x, y) => if(x._6>y._6){x}else{y})
             (recomendacion._1, recomendacion._2, recomendacion._3, recomendacion._4)
         }
     }
