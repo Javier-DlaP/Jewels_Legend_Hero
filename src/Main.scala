@@ -65,13 +65,15 @@ object Main
           {
             val intercambio_fichas = ayuda(width, length, tablero)
             // No hay ningún movimiento disponible
-            if(intercambio_fichas == (-1, -1, -1, -1)){
+            if(intercambio_fichas == (-1, -1, -1, -1))
+            {
               println("No hay movimientos disponibles")
+              false
             // Movimiento recomendado
             } else {
               print("\nfila: "+intercambio_fichas._1+", columna: "+intercambio_fichas._2+" --> fila: "+intercambio_fichas._3+", columna: "+intercambio_fichas._4+"\n")
+              true
             }
-            true
           }
           else
           {
