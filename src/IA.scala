@@ -12,9 +12,7 @@ object IA
     * El formato de la tupla de salida es: (x0, y0, x1, y1)
     */
     def ayuda(width: Int, length: Int, tablero: List[Int]): (Int, Int, Int, Int) =
-    {
-        imprimir_tablero(width, length, tablero)
-        
+    {        
         val profundidad_busqueda = 3
 
         val movimientos = movimientos_posibles(profundidad_busqueda, width, length, tablero)
