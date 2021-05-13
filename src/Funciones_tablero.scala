@@ -518,7 +518,7 @@ object Funciones_tablero
 
   /*
   * PEDIR_NUM_COLUMNA
-  * Pide el dato por pantalla y cpmrueba que esté dentro del rango
+  * Pide el dato por pantalla y comprueba que esté dentro del rango
   */
   def pedir_num_columna (width: Int) : Int =
   {

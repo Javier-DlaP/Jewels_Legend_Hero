@@ -1,4 +1,5 @@
 import Funciones_tablero._
+import scala.io.StdIn.readLine
 import scala.collection.parallel.immutable.ParVector
 
 object IA 
@@ -166,4 +167,35 @@ object IA
 
         movimientos_posibles_aux(0,0,width,length,tablero, new ParVector())
     }
+
+  /*
+  * PEDIR_PROFUNDIDAD
+  * Pide el dato por pantalla y comprueba que sea un entero positivo
+  */
+  def pedir_profundidad () : Int =
+  {
+    println("Profundidad: ")
+    try
+    {
+      //Pedir dato por pantalla
+      val profundidad: Int = readLine().toInt
+
+      // si no es positivo
+      if (profundidad <= 0)
+      {
+        println("\nTiene que ser un numero positivo\n")
+        pedir_profundidad()
+      }
+      else
+      {
+        profundidad
+      }
+    }
+    catch
+    {
+      case _: NumberFormatException =>
+        println("\nTiene que ser un numero entero\n")
+        pedir_profundidad ()
+    }
+  }
 }

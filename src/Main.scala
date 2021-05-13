@@ -64,7 +64,8 @@ object Main
           if ((jugar.toUpperCase() == "AYUDA") || (jugar.toUpperCase() == "HELP"))
           {
             imprimir_tablero(width, length, tablero)
-            val intercambio_fichas = ayuda(5, width, length, tablero)
+            val profundiad = pedir_profundidad ()
+            val intercambio_fichas = ayuda(profundiad, width, length, tablero)
             // No hay ningún movimiento disponible
             if(intercambio_fichas == (-1, -1, -1, -1))
             {
