@@ -183,7 +183,7 @@ object IA
       // si no es positivo
       if (profundidad <= 0)
       {
-        println("\nTiene que ser un numero positivo\n")
+        println("\nTiene que ser un numero mayor de 0\n")
         pedir_profundidad()
       }
       else
